@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from './ui/button'
 import Constants from '@/lib/Constants'
+import Link from 'next/link'
 
 function HeroSection() {
   return (
@@ -18,7 +19,10 @@ function HeroSection() {
       </p>
 
       <div className="mt-8 flex flex-wrap justify-center gap-4 md:flex md:flex-row">
-        <Button className='bg-blue-500 hover:bg-blue-700 text-white w-full md:w-52 shadow-sm'>Get Started</Button>
+        <Button className='bg-blue-500 hover:bg-blue-700 text-white w-full md:w-52 shadow-sm'>
+          <Link href={'/files'}>
+              Get Started
+          </Link></Button>
         <Button className='bg-white  hover:bg-gray-100 text-blue-500 w-full md:w-52 shadow-sm'>Learn More</Button>
       </div>
     </div>

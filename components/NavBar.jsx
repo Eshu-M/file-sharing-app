@@ -17,7 +17,11 @@ export default function NavBar() {
           </div>
         </div>
         <div className="flex justify-between space-x-3">
-            <Button className='bg-blue-500 text-white hover:bg-blue-700'>Get Started</Button>
+            <Button className='bg-blue-500 text-white hover:bg-blue-700'>
+              <Link href={'/files'}>
+              Get Started
+              </Link>
+              </Button>
             <ModeToggle/>
             <div className="md:hidden">
             <SideMenu/>
