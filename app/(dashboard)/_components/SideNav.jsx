@@ -34,7 +34,7 @@ import {  useSideMenu } from '../layout';
       const [activeState, setActiveState] = useState(0);
     
       return (
-        <div className={`md:flex flex-col gap-4 border-r ${sideBar ? 'flex' : 'hidden'}`}>
+        <div className={`md:flex flex-col gap-4 border-r dark:border-gray-400 h-[100vh] ${sideBar ? 'flex' : 'hidden'}`}>
           <div className='p-5'>
             <Image src={'/logo.svg'} width={150} height={100} />
           </div>

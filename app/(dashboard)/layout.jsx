@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import SideNav from './_components/SideNav';
 import HeaderTop from './_components/HeaderTop';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 
 // Create a context for managing the sidebar state
 export const SideMenuContext = createContext();
@@ -22,6 +24,12 @@ function Layout({ children }) {
 
   return (
     <SideMenuContext.Provider value={sideMenu}>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
       <div className='flex'>
         <div className={`h-full inset-1 z-50 md:flex flex-col ${sideBar ? 'flex' : 'hidden'}`}>
           <SideNav />
@@ -29,8 +37,10 @@ function Layout({ children }) {
         <div className='w-full'>
           <HeaderTop />
           {children}
+          <Toaster />
         </div>
       </div>
+      </ThemeProvider>
     </SideMenuContext.Provider>
   );
 }
