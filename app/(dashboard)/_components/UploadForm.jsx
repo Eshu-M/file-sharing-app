@@ -4,9 +4,10 @@ import { Progress } from '@/components/ui/progress';
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
 import React, { useState } from 'react'
+import MyModal from './MyModal';
 
 function UploadForm() {
-    const [file,setFile]=useState();
+    const [file,setFile]=useState(null);
     const [error,setError]=useState(false);
     const { toast } = useToast()
     const onFileSelect=(files)=>{
@@ -22,8 +23,7 @@ function UploadForm() {
     }
   return (  
     <div className='p-10 text-center flex flex-col items-center justify-center px-8 md:p-28 space-y-5'>
-            <h1 className='text-3xl'>Start <span className='text-blue-500'>uploading</span> and <span className='text-blue-500'> sharing</span> your files</h1>
-  
+            <h1 className='text-3xl animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 font-bold'>Start <span className='text-blue-500'>uploading</span> and <span className='text-blue-500'> sharing</span> your files</h1>
         <div className="flex items-center justify-center w-full">
           <label for="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -42,9 +42,11 @@ function UploadForm() {
         title: "Uh oh! Something went wrong.",
         description: "The size of the file selected is bigger than allowed.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
-      }) ,setError(false)) : null}
+      }) ,setError(false) , setFile(null)) : null}
+
       <Button disabled={!file} className='bg-blue-500  hover:bg-blue-700 text-white rounded-3xl w-52 shadow-sm'>Upload</Button>
       <Progress value={33} className=' w-[55%]'/>
+      {file ? <MyModal file={file} removeFile={()=>setFile(null)}/> :null}
     </div>      
   )
 }
