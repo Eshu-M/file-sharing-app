@@ -1,8 +1,17 @@
+import { Progress } from '@/components/ui/progress';
 import { Dialog, Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { Fragment, useEffect, useState } from 'react'
+import { app } from '@/firebaseConfig';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { useToast } from '@/components/ui/use-toast';
+import { doc, getFirestore, setDoc } from "firebase/firestore"; 
+import { useUser } from '@clerk/nextjs';
+import { generateRandomString } from '@/lib/GenerateRandomString';
 
 export default function MyModal({file,removeFile}) {
+  const {user}=useUser();
+  const { toast } = useToast();
   let [isOpen, setIsOpen] = useState(true)
   const [selectedImage, setSelectedImage] = useState();
   useEffect(() => {
@@ -17,13 +26,58 @@ export default function MyModal({file,removeFile}) {
     }
   }, [file]);
   function closeModal() {
-    setIsOpen(false)
+    setIsOpen(false);
+    removeFile();
   }
 
   function openModal() {
     setIsOpen(true)
   }
+  const [progress,setProgress]=useState(0);
+  const metadata = {
+    contentType: file.type
+  };
 
+  const storage=getStorage(app);
+  const db = getFirestore(app);
+
+  const uploadFileToDB=(file)=>{
+    const storageRef = ref(storage, '/file-upload/'+file?.name);
+    const uploadTask = uploadBytesResumable(storageRef, file, file.type);
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(progress);
+        progress==100&&getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          saveToFireStore(file,downloadURL);
+        });
+      }, 
+    )
+  }
+  const saveToFireStore=async(file,fileUrl)=>{
+    const docPath = `files/users/${user?.fullName}`;
+    const id=generateRandomString();
+    try {
+      await setDoc(doc(db, docPath, id), {
+        fileName:file?.name,
+        fileSize:file?.size,
+        fileType:file?.type,
+        fileUrl:fileUrl,
+        userEmail:user?.primaryEmailAddress.emailAddress,
+        userName:user?.fullName,
+        password:'',
+        id:id,
+        shortUrl:process.env.NEXT_PUBLIC_BASE_URL+id,
+      })
+      toast({
+        description: "Your File have been Uploaded Successfully.",
+        variant:'success',
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -67,22 +121,30 @@ export default function MyModal({file,removeFile}) {
                     </div>
                   </div>
 
-                  <div className="mt-4 flex space-x-5">
+                  <div className={`mt-4 flex space-x-5 ${progress>=1 ? 'hidden' : 'block'}`}>
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={closeModal}
+                      className={`inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-600 disabled:hover:cursor-not-allowed ${progress>0?'disabled:' : null}`}
+                      onClick={()=>(
+                        uploadFileToDB(file)
+                        )}
                     >
-                      Got it, thanks!
+                      Upload
                     </button>
+
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={()=>(removeFile(),closeModal)}
+                      onClick={()=>closeModal()}
                     >
                       Cancel
                     </button>
                   </div>
+                  <Progress value={progress} className={` w-[100%] mt-6 ${progress==0 ? 'hidden' : 'block'}`}/>
+                  {progress==100 ? (
+                    closeModal(),
+                    setProgress(0)
+                    ) :null}
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -1,6 +1,5 @@
 'use client'
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
 import React, { useState } from 'react'
@@ -33,7 +32,7 @@ function UploadForm() {
                   <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">Click to <span className='text-blue-500'>upload</span> or <span className='text-blue-500'> Drag</span> and <span className='text-blue-500'> Drop</span> your files</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
               </div>
-              <input id="dropzone-file" type="file" className="hidden" accept='image/*' onChange={(e)=>onFileSelect(e.target.files[0])}/>
+              <input id="dropzone-file" type="file" className="hidden" accept='image/*'  onChange={(e)=>(onFileSelect(e.target.files[0]))}/>
           </label>
       </div> 
       {error ? 
@@ -43,9 +42,6 @@ function UploadForm() {
         description: "The size of the file selected is bigger than allowed.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       }) ,setError(false) , setFile(null)) : null}
-
-      <Button disabled={!file} className='bg-blue-500  hover:bg-blue-700 text-white rounded-3xl w-52 shadow-sm'>Upload</Button>
-      <Progress value={33} className=' w-[55%]'/>
       {file ? <MyModal file={file} removeFile={()=>setFile(null)}/> :null}
     </div>      
   )
