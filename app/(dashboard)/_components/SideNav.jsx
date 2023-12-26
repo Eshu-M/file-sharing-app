@@ -41,7 +41,7 @@ import {  useSideMenu } from '../layout';
           <div className='w-full'>
             {menuList.map((menu) => (
               <div key={menu.id} className=''>
-                <Link href={menu.path} className={`flex gap-4 text-lg  w-full items-center pl-10 p-1.5 hover:bg-gray-200 ${activeState == menu.id ? 'bg-blue-100' : null}`} onClick={() => setActiveState(menu.id)}>
+                <Link href={menu.path} className={`flex gap-4 text-lg  w-full items-center pl-10 p-1.5 hover:bg-gray-200 ${activeState == menu.id ? 'bg-blue-100 text-blue-500' : null}`} onClick={() => setActiveState(menu.id)}>
                   {menu.icon}
                   <p>{menu.name}</p>
                 </Link>

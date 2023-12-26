@@ -8,9 +8,13 @@ import { useToast } from '@/components/ui/use-toast';
 import { doc, getFirestore, setDoc } from "firebase/firestore"; 
 import { useUser } from '@clerk/nextjs';
 import { generateRandomString } from '@/lib/GenerateRandomString';
+import { useRouter } from 'next/navigation';
 
 export default function MyModal({file,removeFile}) {
+  const router=useRouter();
   const {user}=useUser();
+  const storage=getStorage(app);
+  const db = getFirestore(app);
   const { toast } = useToast();
   let [isOpen, setIsOpen] = useState(true)
   const [selectedImage, setSelectedImage] = useState();
@@ -25,6 +29,7 @@ export default function MyModal({file,removeFile}) {
       reader.readAsDataURL(file);
     }
   }, [file]);
+  
   function closeModal() {
     setIsOpen(false);
     removeFile();
@@ -37,9 +42,6 @@ export default function MyModal({file,removeFile}) {
   const metadata = {
     contentType: file.type
   };
-
-  const storage=getStorage(app);
-  const db = getFirestore(app);
 
   const uploadFileToDB=(file)=>{
     const storageRef = ref(storage, '/file-upload/'+file?.name);
@@ -74,10 +76,11 @@ export default function MyModal({file,removeFile}) {
         description: "Your File have been Uploaded Successfully.",
         variant:'success',
       });
+      router.push('/file-preview/'+id);
     } catch (error) {
       console.log(error);
     }
-  }
+  }  
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
