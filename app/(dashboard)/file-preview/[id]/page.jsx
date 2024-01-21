@@ -1,5 +1,5 @@
 'use client'
-import { app } from '@/firebaseConfig';
+import { app } from '/firebaseConfig';
 import { useUser } from '@clerk/nextjs';
 import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
@@ -10,16 +10,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "/components/ui/card"
 import Image from 'next/image';
-import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/components/ui/use-toast';
+import { Input } from '/components/ui/input';
+import { Label } from '/components/ui/label';
+import { Button } from '/components/ui/button';
+import { Checkbox } from '/components/ui/checkbox';
+import { useToast } from '/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
+import GlobalApi from '/lib/GlobalApi.js'
+import { FaCopy } from "react-icons/fa6";
 function FilePreview({params}) {
   const {user}=useUser();
   const router=useRouter();
@@ -28,6 +29,21 @@ function FilePreview({params}) {
   const [enablePassword,setEnablePassword]=useState(false);
   const [password,setPassword]=useState(null);
   const { toast } = useToast();
+  const [email,setEmail]=useState('');
+  const sendEmail=()=>{
+    const data={
+      emailToSend:email,
+      userName:user?.fullName,
+      fileName:file.fileName,
+      fileSize:file.fileSize,
+      fileType:file.fileType,
+      shortUrl:file.ShortUrl,
+      fileUrl:file.fileUrl,
+    };
+     GlobalApi.SendEmail(data).then(resp=>{
+      console.log(resp);
+     })
+  }
   useEffect(() => {
     fetchData(); // Invoke the async function
   }, [params, user?.fullName]);
@@ -39,7 +55,6 @@ function FilePreview({params}) {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setFile(docSnap.data());
-        console.log(docSnap.data());
       } else {
         console.log("No such document!");
       }
@@ -81,6 +96,13 @@ function FilePreview({params}) {
     });
     setPassword(null);
   }
+  const copyFile=()=>{
+    navigator.clipboard.writeText(file?.shortUrl);
+    toast({
+      description: "Link have been copied Successfully.",
+      variant:'success',
+    });
+  }
   return (
     <div className='md:h-[90%] md:w-[90%] h-fit flex mt-5 justify-center items-center'>
       <Card className="w-[60%] h-[70%] ">
@@ -92,16 +114,19 @@ function FilePreview({params}) {
       </CardHeader>
       <CardContent>
       <div className='md:flex md:flex-row gap-5 flex flex-col'>
-         <div className='border-2 border-gray-300 p-10 w-[50]  rounded-lg flex flex-col items-center justify-center'>
-            <Image src={file?.fileUrl} alt='image' height={200} width={200} />
-            <p>Name: {file?.fileName}</p>
+         <div className='border-2 border-gray-300 p-10 w-[50]  rounded-lg flex flex-col items-center justify-center h-fit'>
+            <Image src={file?.fileUrl} alt='image' height={200} width={200} className='object-cover'/>
+            <p className=''>Name: {file?.fileName}</p>
             <p>Type: {file?.fileType}</p>
             <p>Size: {formatFileSize(file?.fileSize)}</p>
           </div>
           <div className='md:w-[50%] w-full flex flex-col space-y-10'>
              <div className="flex flex-col space-y-1.5 w-full">
               <Label htmlFor="name">Short Url</Label>
+              <div className="flex items-center gap-2">
               <Input className="" id="name" placeholder="Short Url" value={file?.shortUrl}/>
+              <FaCopy onClick={()=>copyFile()}/>
+              </div>
             </div>
              <div className="flex flex-col space-y-1.5 w-full">
              <div className='flex space-x-3'>
@@ -109,16 +134,16 @@ function FilePreview({params}) {
                  <Label htmlFor="name">Enable Password?</Label>
                 </div>
               <div className={`flex space-x-5 ${enablePassword?'inline-block':'hidden'}`}>
-                <Input type="password" placeholder="Short Url" onChange={(e)=>setPassword(e.target.value)}/>
+                <Input type="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)}/>
                 <Button variant="default" onClick={()=>onPasswordSaved(password)}>Save</Button>
               </div>
             </div>
             <div className='border rounded-md p-2 flex flex-col space-y-2'>
                <div className="flex flex-col space-y-1.5 w-full">
                  <Label htmlFor="name">Send File To Email</Label>
-                 <Input type="email" id="name" placeholder="example@gmail.com" />
+                 <Input onChange={(e)=>setEmail(e.target.value)} type="email" id="name" placeholder="example@gmail.com" />
                </div>
-               <Button variant="default" className="w-full">Send Email</Button>
+               <Button variant="default" className="w-full" onClick={()=>sendEmail()}>Send Email</Button>
             </div>
           </div>
        </div>

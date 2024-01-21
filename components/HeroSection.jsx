@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from './ui/button'
-import Constants from '@/lib/Constants'
+import Constants from '/lib/Constants'
 import Link from 'next/link'
 
 function HeroSection() {

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useContext } from 'react'
 import { IoMdMenu } from "react-icons/io";
 import {  useSideMenu } from '../layout';
-import ModeToggle from '@/components/DarkMode';
+import ModeToggle from '/components/DarkMode';
 
 function HeaderTop() {
   const { sideBar, setSideBar } = useSideMenu();

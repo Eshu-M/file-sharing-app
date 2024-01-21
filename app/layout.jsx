@@ -1,6 +1,6 @@
 import { Inter,Outfit } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '/components/theme.jsx'
 import { ClerkProvider } from '@clerk/nextjs'
 
 const inter = Outfit({ subsets: ['latin'] })

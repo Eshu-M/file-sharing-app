@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import SideNav from './_components/SideNav';
 import HeaderTop from './_components/HeaderTop';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '/components/theme.jsx';
+import { Toaster } from '/components/ui/toaster';
 
 // Create a context for managing the sidebar state
 export const SideMenuContext = createContext();

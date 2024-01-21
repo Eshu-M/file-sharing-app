@@ -1,12 +1,12 @@
 import React from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from "/components/ui/button"
 import { IoMdMenu } from "react-icons/io";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "/components/ui/dropdown-menu";
 import Link from 'next/link';
 function SideMenu() {
   return (

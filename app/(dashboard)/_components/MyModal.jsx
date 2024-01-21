@@ -1,13 +1,13 @@
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '/components/ui/progress';
 import { Dialog, Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { Fragment, useEffect, useState } from 'react'
-import { app } from '@/firebaseConfig';
+import { app } from '/firebaseConfig';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '/components/ui/use-toast';
 import { doc, getFirestore, setDoc } from "firebase/firestore"; 
 import { useUser } from '@clerk/nextjs';
-import { generateRandomString } from '@/lib/GenerateRandomString';
+import { generateRandomString } from '/lib/GenerateRandomString';
 import { useRouter } from 'next/navigation';
 
 export default function MyModal({file,removeFile}) {
@@ -59,6 +59,7 @@ export default function MyModal({file,removeFile}) {
   }
   const saveToFireStore=async(file,fileUrl)=>{
     const docPath = `files/users/${user?.fullName}`;
+    const userName=user?.fullName+'/';
     const id=generateRandomString();
     try {
       await setDoc(doc(db, docPath, id), {
@@ -70,7 +71,7 @@ export default function MyModal({file,removeFile}) {
         userName:user?.fullName,
         password:'',
         id:id,
-        shortUrl:process.env.NEXT_PUBLIC_BASE_URL+id,
+        shortUrl:process.env.NEXT_PUBLIC_BASE_URL+"f/"+userName+id,
       })
       toast({
         description: "Your File have been Uploaded Successfully.",
